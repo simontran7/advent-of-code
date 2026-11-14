@@ -6,18 +6,20 @@ fn main() {
 }
 
 fn part1(input: &str) -> i32 {
-    input
-        .chars()
-        .fold(0, |acc, x| if x == '(' { acc + 1 } else { acc - 1 })
+    floors(input).last().unwrap()
 }
 
 fn part2(input: &str) -> Option<usize> {
-    let mut floor = 0;
-    input
-        .chars()
-        .position(|c| {
-            floor += if c == '(' { 1 } else { -1 };
-            floor == -1
-        })
-        .map(|i| i + 1)
+    floors(input).position(|floor| floor == -1).map(|i| i + 1)
+}
+
+fn floors(input: &str) -> impl Iterator<Item = i32> + '_ {
+    input.chars().scan(0, |floor, c| {
+        *floor += match c {
+            '(' => 1,
+            ')' => -1,
+            _ => 0,
+        };
+        Some(*floor)
+    })
 }
